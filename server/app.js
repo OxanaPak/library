@@ -13,8 +13,9 @@ app.use(express.json());
 app.use('/views',express.static(path.join(__dirname, '../views')));
 
 app.get('/', (req, res) => {
-  res.redirect('/views/main.html');
-  });
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));  
+});
+
 
 app.get('/books', (req, res) => {
   const { genre, author, title, startDate, endDate } = req.query;
