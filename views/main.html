@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Books</title>
+  <link rel="stylesheet" href="css/main.css"> 
+</head>
+<body>
+  <h1>All Books in the Library</h1>
+
+  <label for="filter-type">Filter by:</label>
+  <select id="filter-type">
+    <option value="none">Select a filter</option>
+    <option value="genre">Genre</option>
+    <option value="author">Author</option>
+    <option value="title">Title</option>
+    <option value="publication-date">Publication Date</option>
+  </select>
+
+  <div id="genre-filter" style="display:none;">
+    <label for="genre">Select Genre:</label>
+    <select id="genre">
+      <option value="">All Genres</option>
+    </select>
+  </div>
+
+  <div id="author-filter" style="display:none;">
+    <label for="author">Enter Author:</label>
+    <input type="text" id="author-input" placeholder="Enter author name">
+  </div>
+
+  <div id="title-filter" style="display:none;">
+    <label for="title">Enter Title:</label>
+    <input type="text" id="title-input" placeholder="Enter book title">
+  </div>
+
+  <div id="publication-date-filter" style="display:none;">
+    <label for="start-date">Start Date:</label>
+    <input type="date" id="start-date">
+    <label for="end-date">End Date:</label>
+    <input type="date" id="end-date">
+  </div>
+
+  <button id="apply-filter">Apply Filter</button>
+  <button class="add-book-btn" id="show-add-book-form">Add a Book</button>
+  </div>
+  <div class="export-buttons">
+    <button id="export-csv-btn">Export as CSV</button>
+    <button id="export-json-btn">Export as JSON</button>
+  </div>
+  <div class="add-book-form" id="add-book-form" style="display: none;">
+    <h3>Add a New Book</h3>
+    <form id="book-form">
+      <label for="book-title">Title:</label>
+      <input type="text" id="book-title" required><br><br>
+
+      <label for="book-author">Author:</label>
+      <input type="text" id="book-author" required><br><br>
+
+      <label for="book-genre">Genre:</label>
+      <select id="book-genre" required>
+        <option value="">Select Genre</option>
+        <option value="Historical Fiction">Historical Fiction</option>
+        <option value="Science Fiction">Science Fiction</option>
+        <option value="Fantasy">Fantasy</option>
+        <option value="Romance">Romance</option>
+        <option value="Thriller">Thriller</option>
+      </select><br><br>
+
+      <label for="book-date">Publication Date:</label>
+      <input type="date" id="book-date" required><br><br>
+
+      <label for="book-isbn">ISBN:</label>
+      <input type="text" id="book-isbn" required><br><br>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+</div>
+
+  <h2>Books List</h2>
+  <table id="books-table" border="1">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Genre</th>
+        <th>Publication Date</th>
+        <th>ISBN</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script> 
+  document.querySelector('#export-csv-btn').addEventListener('click', function() {
+    window.location.href = '/export/csv';  
+  });
+
+  document.querySelector('#export-json-btn').addEventListener('click', function() {
+    window.location.href = '/export/json'; 
+  });
+
+  function renderBooks(books) {
+    const tableBody = document.querySelector('#books-table tbody');
+    tableBody.innerHTML = '';  
+
+    books.forEach(book => {
+      const row = `<tr>
+                    <td>${book.Title}</td>
+                    <td>${book.Author}</td>
+                    <td>${book.Genre}</td>
+                    <td>${new Date(book.PublicationDate).toLocaleDateString('en-GB')}</td>
+                    <td>${book.ISBN}</td>
+                  </tr>`;
+      tableBody.innerHTML += row;
+    });
+  }
+
+  let booksList = [];
+
+  function fetchBooks() {
+    fetch('/books')
+      .then(response => response.json())
+      .then(books => {
+        booksList = books;
+        renderBooks(books);
+
+        const genreFilter = document.querySelector('#genre');
+        const genres = new Set();
+
+        books.forEach(book => {
+          genres.add(book.Genre);
+        });
+
+        genres.forEach(genre => {
+          const option = document.createElement('option');
+          option.value = genre;
+          option.textContent = genre;
+          genreFilter.appendChild(option);
+        });
+      })
+      .catch(error => console.error('Error fetching books:', error));
+  }
+
+  fetchBooks();
+
+
+document.querySelector('#show-add-book-form').addEventListener('click', function() {
+  const form = document.querySelector('#add-book-form');
+  if (form.style.display === 'none' || form.style.display === '') {
+    form.style.display = 'block';
+  } else {
+    form.style.display = 'none';
+  }
+});
+
+  document.querySelector('#book-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const newBook = {
+      Title: document.querySelector('#book-title').value,
+      Author: document.querySelector('#book-author').value,
+      Genre: document.querySelector('#book-genre').value,
+      PublicationDate: document.querySelector('#book-date').value,
+      ISBN: document.querySelector('#book-isbn').value
+    };
+
+    fetch('/add-book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newBook)
+    })
+    .then(response => response.json())
+    .then(data => {
+      booksList.push(newBook);
+      renderBooks(booksList); 
+      document.querySelector('#add-book-form').style.display = 'none'; 
+    })
+    .catch(error => console.error('Error adding book:', error));
+  });
+
+  fetch('/genres')
+    .then(response => response.json())
+    .then(genres => {
+      const genreDropdown = document.querySelector('#book-genre');
+      genres.forEach(genre => {
+        const option = document.createElement('option');
+        option.value = genre;
+        option.textContent = genre;
+        genreDropdown.appendChild(option);
+      });
+    })
+    .catch(error => console.error('Error fetching genres:', error));
+
+  document.querySelector('#filter-type').addEventListener('change', function() {
+    const filterType = this.value;
+    document.querySelector('#genre-filter').style.display = 'none';
+    document.querySelector('#author-filter').style.display = 'none';
+    document.querySelector('#title-filter').style.display = 'none';
+    document.querySelector('#publication-date-filter').style.display = 'none';
+
+    if (filterType === 'genre') {
+      document.querySelector('#genre-filter').style.display = 'block';
+    } else if (filterType === 'author') {
+      document.querySelector('#author-filter').style.display = 'block';
+    } else if (filterType === 'title') {
+      document.querySelector('#title-filter').style.display = 'block';
+    } else if (filterType === 'publication-date') {
+      document.querySelector('#publication-date-filter').style.display = 'block';
+    }
+  });
+
+  document.querySelector('#apply-filter').addEventListener('click', function() {
+    const filterType = document.querySelector('#filter-type').value;
+    let filteredBooks = [...booksList];
+
+    if (filterType === 'genre') {
+      const genre = document.querySelector('#genre').value;
+      filteredBooks = booksList.filter(book => book.Genre === genre);
+    } else if (filterType === 'author') {
+      const author = document.querySelector('#author-input').value.toLowerCase();
+      filteredBooks = booksList.filter(book => book.Author.toLowerCase().includes(author));
+    } else if (filterType === 'title') {
+      const title = document.querySelector('#title-input').value.toLowerCase();
+      filteredBooks = booksList.filter(book => book.Title.toLowerCase().includes(title));
+    } else if (filterType === 'publication-date') {
+      const startDate = document.querySelector('#start-date').value;
+      const endDate = document.querySelector('#end-date').value;
+      filteredBooks = booksList.filter(book => {
+        const publicationDate = new Date(book.PublicationDate);
+        return publicationDate >= new Date(startDate) && publicationDate <= new Date(endDate);
+      });
+    }
+
+    renderBooks(filteredBooks); 
+  });
+</script>
+
+  </script>
+
+</body>
+</html>

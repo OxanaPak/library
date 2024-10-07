@@ -1,0 +1,134 @@
+body {
+  background-color: #f7e4d1;
+  font-family: Arial, sans-serif; 
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 80%;
+  margin: 20px auto; 
+  border-collapse: collapse;
+  text-align: left;
+  background-color: #a9ba9d;
+}
+
+table th, table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+
+table th {
+  background-color: #b2845b;
+  color: white;
+  padding: 12px;
+}
+
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
+
+
+.filter-section {
+  display: flex;
+  align-items: center;
+}
+
+.filter-section label {
+  margin-right: 10px;
+}
+
+button {
+  padding: 8px 15px;
+  background-color: #c19a6b; 
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px; 
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #a67c52; 
+}
+
+
+.add-book-btn {
+  float: right;
+}
+
+.export-buttons {
+  margin-top: 20px;
+}
+
+.export-buttons button {
+  margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+  table {
+    width: 100%;
+  }
+  .controls {
+    flex-direction: column;
+    align-items: center;
+  }
+  .filter-section {
+    margin-bottom: 10px;
+  }
+}
+
+.add-book-container {
+  position: relative; 
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 20px; 
+}
+
+.add-book-btn {
+  margin-bottom: 10px; 
+}
+
+.add-book-form {
+  background-color: #f5f5dc;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.add-book-form input, .add-book-form select {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-book-form button {
+  padding: 10px 20px;
+  background-color: #b2845b; 
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-book-form button:hover {
+  background-color: #a67c52;
+}
