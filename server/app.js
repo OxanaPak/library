@@ -10,7 +10,8 @@ app.use(express.static('images'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-app.use('/views',express.static(path.join(__dirname, '../views')));
+app.use(express.static(path.join(__dirname, 'views')));
+
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'));  
