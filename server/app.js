@@ -6,15 +6,13 @@ const app = express();
 const { Parser } = require('json2csv');
 app.use(express.static('css'));
 app.use(express.static('images'));
-
-
+app.use(express.static(path.join(__dirname, '../views')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'views')));
 
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'main.html'));  
+  res.sendFile(path.join(__dirname, '..', 'views', 'main.html'));
 });
 
 
